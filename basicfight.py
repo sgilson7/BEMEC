@@ -74,10 +74,12 @@ class BasicCombatModule(object):
 		if self.player.is_dead():
 			print("You have died!")
 			self.player.full_heal()
+			return False
 		elif self.enemy.is_dead():
 			exp_gain = self.enemy.reward
 			print("You have gained %.3f exp!" % exp_gain)
 			self.player.add_exp(exp_gain)
+			return True
 
 
 

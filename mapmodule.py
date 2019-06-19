@@ -150,7 +150,23 @@ class GamePlayer(object):
 		level_fight = random.randint(self.player.level, self.player.level * 2)
 		boss = player_character.PlayerCharacter(random_boss_name, 1, level_fight)
 		fight_module = basicfight.BasicCombatModule(self.player, boss)
-		fight_module.fight()
+		outcome = fight_module.fight()
+		if outcome:
+			loot = boss.weapon
+			loot.print_weapon_stats()
+			while True:
+					try:
+						choice = int(input('Choose boss weapon with 0, or stay with your weapon by pressing 1'))
+						break
+					except Exception:
+						print('Invalid Choice!')
+						continue
+			if choice == 0:
+				self.player.unequip_weapon()
+				self.player.equip_weapon(loot)
+				self.player.print_stats()
+			else:
+				return
 
 
 
