@@ -1,7 +1,7 @@
 import random
 import os 
 import weapon
-
+import questingmodule
 class RandomAssetGenerator(object):
 	def __init__(self, type_a, num_descriptors):
 		self.type = type_a
@@ -15,7 +15,8 @@ class RandomAssetGenerator(object):
 		self.namingschemes = \
 		{'basic_name': lambda n, a: '%s the %s' %(n, a)
 		,'weapon' : lambda w, a: '%s %s' %(a, w)
-		,'boss_name': lambda n, a, no: '%s, %s %s' % (n, a, no)}
+		,'boss_name': lambda n, a, no: '%s, %s %s' % (n, a, no)
+		,'quest_name': lambda v, n: '%s %s' % (v, n)}
 
 
 
@@ -79,6 +80,9 @@ class RandomAssetGenerator(object):
 	def generate_boss_name(self):
 		return self.namingschemes[self.type](self.get_random_attr(self.names), self.get_random_attr(self.adjectives), self.get_random_attr(self.nouns))
 
+	def generate_quest_name(self):
+		return self.namingschemes[self.type](self.get_random_attr(self.verbs), self.get_random_attr(self.nouns))
+
 	def generate_random_weapon(self, level):
 		d_f, d_f_readable = self.weapon_l_dict[random.choice(list(self.weapon_l_dict.keys()))]
 		#print(d_f_readable)
@@ -94,6 +98,10 @@ class RandomAssetGenerator(object):
 		stat_buff = (s_buff, d_buff, i_buff)
 		random_weapon = weapon.Weapon(self.generate_weapon_name(),  d_f, d_f_readable,  level_req, stat_buff)
 		return random_weapon
+
+	def generate_random_quest(self, level):
+		num_quests = random.randint(0, level)
+		random_weapon = self.generate_random_weapon(level)
 
 
 if __name__ == '__main__':
