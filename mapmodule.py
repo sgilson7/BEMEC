@@ -3,6 +3,7 @@ from enum import Enum
 import basicfight
 import player_character
 import randomgenerator
+import controls
 class Tiles(Enum):
 	PLAINS=0
 	LAKE=1
@@ -91,18 +92,18 @@ class GamePlayer(object):
 
 	def take_player_movement(self):
 		self.print_map()
-		while True:
-			try:
-				choice = int(input('U=0, R=1, D=2, L=3'))
-				for direction in list(Direction):
-					# print(direction.value)
-					# print(direction.value == choice)
-					if direction.value == choice:
-						self.move_player(direction)
-						break
-				return 
-			except Exception:
-				continue
+		choice = controls.userInput()
+		direction = -1
+		if choice == 'w':
+			direction = Direction.UP
+		if choice == 'a':
+			direction = Direction.LEFT
+		if choice == 's':
+			direction = Direction.DOWN
+		if choice == 'd':
+			direction = Direction.RIGHT
+		if direction != -1:
+			self.move_player(direction)
 
 	def evaluate_landing_position(self):
 		biome = self.map.at_position(self.player_loc)
