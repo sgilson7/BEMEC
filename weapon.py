@@ -14,7 +14,7 @@ class Weapon(object):
 	def print_weapon_stats(self):
 		print('Weapon Name: %s Level: %d' %(self.name, self.level_req))
 		print('Damage Formula: %s' % self.damage_formula_readable)
-		print('+%d str +%d dex +%d int' % (self.stat_buff[0], self.stat_buff[1], self.stat_buff[2]))
+		print('+%d str +%d int +%d dex' % (self.stat_buff[0], self.stat_buff[1], self.stat_buff[2]))
 
 	def equip(self):
 		if self.equipped:
