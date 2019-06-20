@@ -77,6 +77,9 @@ class GamePlayer(object):
 		self.player = player
 		self.map = MapModule(self.map_size)
 		self.player_loc = (random.randint(0, self.map_size - 1), random.randint(0, self.map_size - 1))
+		random_quest_gen = randomgenerator.RandomAssetGenerator('quest_name', 3)
+		dest_loc = (random.randint(0, self.map_size - 1), random.randint(0, self.map_size - 1))
+		self.quest = random_quest_gen.generate_random_quest(self.player.level, dest_loc)
 		# self.map.print_map_player(self.player_loc)
 
 	def move_player(self, direction):
@@ -104,6 +107,44 @@ class GamePlayer(object):
 			except Exception:
 				continue
 
+	def evaluate_quest_completion(self):
+		quest_complete = self.quest.check_quest_completion(self.player_loc)
+		if quest_complete:
+			self.quest = quest_complete[1]
+			self.offer_loot(1, quest_complete[0])
+
+	def offer_loot(self, offer, s_weapon=None):
+		random_gen = randomgenerator.RandomAssetGenerator('weapon', 3)
+		random_weapons = []
+		self.player.print_stats()
+		print('Choose a new weapon!')
+		if s_weapon:
+			random_weapons.append(s_weapon)
+		else:
+			for i in range(0, offer):
+					_r = random_gen.generate_random_weapon(self.player.level)
+					random_weapons.append(_r)
+		for i in range(0, len(random_weapons)):
+			print('----Weapon %d ----' % i)
+			_w = random_weapons[i]
+			_w.print_weapon_stats()
+
+		while True:
+			try:
+				choice = int(input('Choose a new weapon, or stay with your weapon by pressing %d' % offer))
+				break
+			except Exception:
+				print('Invalid Choice!')
+				continue
+
+		if choice == offer:
+			return
+		new_weapon = random_weapons[choice]
+		self.player.unequip_weapon()
+		self.player.equip_weapon(new_weapon)
+		self.player.print_stats()
+
+
 	def evaluate_landing_position(self):
 		biome = self.map.at_position(self.player_loc)
 		if biome == Tiles.CAVE:
@@ -114,34 +155,12 @@ class GamePlayer(object):
 			fight_module.fight()
 
 		if biome == Tiles.VILLAGE:
-			random_gen = randomgenerator.RandomAssetGenerator('weapon', 3)
-			self.player.print_stats()
-			print('Choose a new weapon!')
-			random_weapons = []
 			offer = 3
-			for i in range(0, offer):
-				_r = random_gen.generate_random_weapon(self.player.level)
-				random_weapons.append(_r)
-				print('----Weapon %d ----' % i)
-				_r.print_weapon_stats()
-
-			while True:
-				try:
-					choice = int(input('Choose a new weapon, or stay with your weapon by pressing %d' % offer))
-					break
-				except Exception:
-					print('Invalid Choice!')
-					continue
-
-			if choice == offer:
-				return
-			new_weapon = random_weapons[choice]
-			self.player.unequip_weapon()
-			self.player.equip_weapon(new_weapon)
-			self.player.print_stats()
+			self.offer_loot(3)
 
 		if biome == Tiles.LAKE:
 			self.lake_module()
+		self.evaluate_quest_completion()
 
 	def lake_module(self):
 		print('A very dangerous enemy approaches!')
@@ -153,20 +172,7 @@ class GamePlayer(object):
 		outcome = fight_module.fight()
 		if outcome:
 			loot = boss.weapon
-			loot.print_weapon_stats()
-			while True:
-					try:
-						choice = int(input('Choose boss weapon with 0, or stay with your weapon by pressing 1'))
-						break
-					except Exception:
-						print('Invalid Choice!')
-						continue
-			if choice == 0:
-				self.player.unequip_weapon()
-				self.player.equip_weapon(loot)
-				self.player.print_stats()
-			else:
-				return
+			self.offer_loot(1, loot)
 
 
 
@@ -179,4 +185,6 @@ class GamePlayer(object):
 			# print(self.map.get_tile(self.map.at_position(self.player_loc)))
 	def print_map(self):
 		self.map.print_map_player(self.player_loc)
+		if self.quest:
+			self.quest.print_quest()
 

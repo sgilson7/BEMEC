@@ -99,9 +99,15 @@ class RandomAssetGenerator(object):
 		random_weapon = weapon.Weapon(self.generate_weapon_name(),  d_f, d_f_readable,  level_req, stat_buff)
 		return random_weapon
 
-	def generate_random_quest(self, level):
-		num_quests = random.randint(0, level)
-		random_weapon = self.generate_random_weapon(level)
+	def generate_random_quest(self, level, destination):
+		num_quests = random.randint(1, level * 2)
+		child = None
+		for i in range(0, num_quests):
+			random_weapon = self.generate_random_weapon(2 * level)
+			quest = questingmodule.Quest(child, destination, random_weapon)
+			child = quest
+
+		return child
 
 
 if __name__ == '__main__':
