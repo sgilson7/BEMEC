@@ -1,5 +1,5 @@
 # BEMEC
-
+sample change
 To run game, navigate to the 'game' directory, and enter the command:
 
 Windows: `py __main__.py`
